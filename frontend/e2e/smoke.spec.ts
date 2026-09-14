@@ -94,7 +94,7 @@ test('profile and create form open as overlay cards on a phone', async ({ page }
 });
 
 test('employee details open as an overlay on a compact desktop', async ({ page }) => {
-  await page.setViewportSize({ width: 1024, height: 768 });
+  await page.setViewportSize({ width: 1200, height: 800 });
   await mockApi(page);
   await signIn(page);
   await page.getByRole('button', { name: 'Employees' }).click();
@@ -104,4 +104,9 @@ test('employee details open as an overlay on a compact desktop', async ({ page }
   await expect(detailCard).toBeVisible();
   expect(await detailCard.evaluate((element) => getComputedStyle(element).position)).toBe('fixed');
   await expect(page.getByText('Effective Sep 14, 2026 — Current')).toBeVisible();
+
+  await page.getByRole('button', { name: 'Close profile', exact: true }).click();
+  await page.getByRole('button', { name: 'New employee' }).click();
+  await expect(page.getByRole('heading', { name: 'Create profile' })).toBeVisible();
+  expect(await page.locator('.detail').evaluate((element) => getComputedStyle(element).position)).toBe('fixed');
 });
