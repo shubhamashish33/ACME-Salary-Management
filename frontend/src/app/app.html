@@ -117,7 +117,7 @@
             </div>
             <div class="bars">
               @for (row of s.byCountry; track row.label) {
-                <div>
+                <div style="margin-bottom: 1rem;">
                   <label
                     ><span>{{ row.label }}</span
                     ><b>{{ formatMoney(row.averageSalary) }}</b></label
