@@ -27,11 +27,10 @@ public class SecurityConfig {
             .authorizeHttpRequests(a -> a.requestMatchers("/actuator/health/**", "/v3/api-docs/**", "/swagger-ui/**").permitAll().anyRequest().authenticated())
             .httpBasic(Customizer.withDefaults()).build();
     }
-    @Bean CorsConfigurationSource cors(@Value("${app.allowed-origins}") String origins) {
+    @Bean CorsConfigurationSource corsConfigurationSource(@Value("${app.allowed-origins}") String origins) {
         var config = new CorsConfiguration();
         config.setAllowedOrigins(List.of(origins.split(","))); config.setAllowedMethods(List.of("GET","POST","PUT","DELETE","OPTIONS"));
         config.setAllowedHeaders(List.of("Authorization","Content-Type","X-Correlation-Id")); config.setExposedHeaders(List.of("X-Correlation-Id"));
         var source = new UrlBasedCorsConfigurationSource(); source.registerCorsConfiguration("/**", config); return source;
     }
 }
-
