@@ -15,7 +15,7 @@ interface ImportPreview { totalRows:number; validRows:number; invalidRows:number
 export class App {
   api = new URLSearchParams(location.search).get('apiUrl') || (window as any).__SALARY_API_URL__ || 'http://localhost:8080';
   view=signal<View>('dashboard'); loggedIn=signal(false); loading=signal(false); error=signal('');
-  username='hr@acme.test'; password='ChangeMe123!'; summary=signal<Summary|null>(null);
+  username='hr@acme.test'; password=''; summary=signal<Summary|null>(null);
   employees=signal<Page<Employee>|null>(null); selected=signal<Employee|null>(null); salaries=signal<Salary[]>([]);
   editing=signal(false); employeeDraft:any={};
   query=''; active='true'; page=0; amount?:number; currency='USD'; effectiveFrom=new Date().toISOString().slice(0,10);

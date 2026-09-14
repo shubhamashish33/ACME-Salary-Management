@@ -6,7 +6,7 @@ A web application for maintaining and understanding base salary data for 10,000 
 
 - **Live application:** https://salary-management-web.onrender.com
 - **Video walkthrough:** add the unlisted video URL before submission
-- **Demo user:** `hr@acme.test`; obtain the generated password from the Render API environment
+- **Demo user:** `hr@acme.test`; supply the generated Render password privately with the submission
 - **API documentation:** https://salary-management-api-09al.onrender.com/swagger-ui/index.html
 - **Health:** https://salary-management-api-09al.onrender.com/actuator/health
 
@@ -48,7 +48,7 @@ Dates use ISO `YYYY-MM-DD`; country and currency values use ISO codes; departmen
 1. Push this repository to GitHub.
 2. In Render, create a Blueprint from `render.yaml`.
 3. Confirm the deployed hostnames still match the committed `API_URL` and `ALLOWED_ORIGINS`; update and redeploy if Render changes either hostname during recovery.
-4. Copy the generated `DEMO_PASSWORD` into the submission instructions without committing it.
+4. Copy the generated `DEMO_PASSWORD` into the private submission instructions without committing it.
 5. Check the health endpoint, wake the API, and complete the acceptance walkthrough before sharing the URL.
 
 Free-tier limitations are material: the API sleeps after inactivity and can take about a minute to wake; the free PostgreSQL database expires 30 days after creation and has no backups. Record the database expiry date, deploy close to submission, and retain the deterministic seed/recovery path. Docker Compose remains the durable evaluator fallback.
