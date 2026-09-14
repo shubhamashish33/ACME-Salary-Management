@@ -1,5 +1,6 @@
 :host { display:block; --green:#174b3a; --ink:#17231f; }
 *{box-sizing:border-box}
+.inactive-note{display:grid;gap:.2rem;margin:2rem 0 0;padding:.85rem 1rem;border-radius:9px;background:#f1f3f1;color:#536159;font-size:.78rem}.inactive-note strong{color:#33423a}
 button,input,select{font:inherit} button{cursor:pointer;border:1px solid #d6d8d4;background:#fff;border-radius:9px;padding:.72rem 1rem;color:var(--ink);display:inline-flex;align-items:center;justify-content:center;gap:.45rem} button:disabled{opacity:.45;cursor:not-allowed}.primary{background:var(--green);color:#fff;border-color:var(--green);font-weight:600}
 input,select{width:100%;border:1px solid #d4d8d5;border-radius:9px;background:#fff;padding:.82rem;outline:none}input:focus,select:focus{border-color:var(--green);box-shadow:0 0 0 3px rgb(23 75 58 / 10%)}
 .directory-actions{display:grid;grid-template-columns:minmax(260px,1fr) 190px auto auto auto;gap:.65rem;margin-bottom:1rem}.directory-actions>*{min-width:0}.search{position:relative}.search app-icon{position:absolute;left:.9rem;top:50%;transform:translateY(-50%);color:#68756e}.search input{min-width:0;padding-left:2.65rem}

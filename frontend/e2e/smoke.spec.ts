@@ -12,14 +12,14 @@ const summary = {
   byLevel: [],
 };
 
-async function mockApi(page: Page): Promise<void> {
+async function mockApi(page: Page, employeeActive = true): Promise<void> {
   await page.route('**/api/v1/auth/me', (route) => route.fulfill({ json: { username: 'hr@acme.test', role: 'HR_MANAGER' } }));
   await page.route('**/api/v1/analytics/summary', (route) => route.fulfill({ json: summary }));
   await page.route('**/api/v1/reference/countries', (route) => route.fulfill({ json: [{ value: 'US', label: 'United States' }] }));
   await page.route('**/api/v1/reference/departments', (route) => route.fulfill({ json: [{ value: '2', label: 'Engineering' }] }));
   await page.route('**/api/v1/reference/levels', (route) => route.fulfill({ json: [{ value: '3', label: 'Senior' }] }));
   await page.route('**/api/v1/employees?**', (route) => route.fulfill({ json: {
-    content: [{ id: 1, employeeNumber: 'ACME-00001', firstName: 'Avery', lastName: 'Patel', email: 'avery@acme.test', gender: 'Prefer not to say', countryCode: 'US', departmentId: 2, jobLevelId: 3, hiredOn: '2025-01-01', active: true, version: 0 }],
+    content: [{ id: 1, employeeNumber: 'ACME-00001', firstName: 'Avery', lastName: 'Patel', email: 'avery@acme.test', gender: 'Prefer not to say', countryCode: 'US', departmentId: 2, jobLevelId: 3, hiredOn: '2025-01-01', active: employeeActive, version: 0 }],
     totalElements: 1, totalPages: 1, number: 0,
   } }));
 }
@@ -61,4 +61,14 @@ test('employee directory fits a phone viewport without horizontal overflow', asy
   expect(overflowingElements).toEqual([]);
   const sidebarPosition = await page.locator('.sidebar').evaluate((element) => getComputedStyle(element).position);
   expect(sidebarPosition).toBe('fixed');
+});
+
+test('inactive employee profile does not offer deactivation again', async ({ page }) => {
+  await mockApi(page, false);
+  await signIn(page);
+  await page.getByRole('button', { name: 'Employees' }).click();
+  await page.getByLabel('Employee status').selectOption('false');
+  await page.getByText('Avery Patel').click();
+  await expect(page.getByText('Employee is inactive')).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Deactivate employee' })).toHaveCount(0);
 });
