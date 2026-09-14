@@ -1,6 +1,9 @@
 package com.acme.salary.employee;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.JdbcTypeCode;
+
+import java.sql.Types;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 
@@ -12,6 +15,7 @@ public class Employee {
     @Column(name="last_name", nullable=false) String lastName;
     @Column(nullable=false, unique=true) String email;
     @Column(nullable=false) String gender;
+    @JdbcTypeCode(Types.CHAR)
     @Column(name="country_code", nullable=false, columnDefinition="char(2)") String countryCode;
     @Column(name="department_id", nullable=false) Long departmentId;
     @Column(name="job_level_id", nullable=false) Long jobLevelId;

@@ -1,7 +1,10 @@
 package com.acme.salary.salary;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.JdbcTypeCode;
+
 import java.math.BigDecimal;
+import java.sql.Types;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 
@@ -10,6 +13,7 @@ public class Salary {
  @Id @GeneratedValue(strategy=GenerationType.IDENTITY) Long id;
  @Column(name="employee_id",nullable=false) Long employeeId;
  @Column(nullable=false,precision=19,scale=2) BigDecimal amount;
+ @JdbcTypeCode(Types.CHAR)
  @Column(name="currency_code",nullable=false,columnDefinition="char(3)") String currencyCode;
  @Column(name="effective_from",nullable=false) LocalDate effectiveFrom;
  @Column(name="effective_to") LocalDate effectiveTo;
