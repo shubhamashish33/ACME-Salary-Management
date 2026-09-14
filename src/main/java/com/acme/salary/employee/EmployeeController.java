@@ -13,14 +13,17 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/employees")
 public class EmployeeController {
   private final EmployeeRepository repository;
+  private final EmployeeReferenceValidator referenceValidator;
 
-  public EmployeeController(EmployeeRepository repository) {
+  public EmployeeController(EmployeeRepository repository, EmployeeReferenceValidator referenceValidator) {
     this.repository = repository;
+    this.referenceValidator = referenceValidator;
   }
 
   public record Request(@NotBlank String employeeNumber, @NotBlank String firstName, @NotBlank String lastName,
-      @Email @NotBlank String email, @NotBlank String gender, @Pattern(regexp = "[A-Z]{2}") String countryCode,
-      @Positive Long departmentId, @Positive Long jobLevelId, @PastOrPresent LocalDate hiredOn) {
+      @Email @NotBlank String email, @NotBlank String gender, @NotBlank @Pattern(regexp = "[A-Z]{2}") String countryCode,
+      @NotNull @Positive Long departmentId, @NotNull @Positive Long jobLevelId,
+      @NotNull @PastOrPresent LocalDate hiredOn) {
   }
 
   public record Response(Long id, String employeeNumber, String firstName, String lastName, String email, String gender,
@@ -47,6 +50,7 @@ public class EmployeeController {
   Response create(@Valid @RequestBody Request r) {
     if (repository.existsByEmployeeNumberOrEmail(r.employeeNumber(), r.email()))
       throw new IllegalArgumentException("Employee number or email already exists");
+    referenceValidator.validate(r.countryCode(), r.departmentId(), r.jobLevelId());
     return Response.from(repository.save(new Employee(r.employeeNumber(), r.firstName(), r.lastName(), r.email(),
         r.gender(), r.countryCode(), r.departmentId(), r.jobLevelId(), r.hiredOn())));
   }
@@ -54,6 +58,7 @@ public class EmployeeController {
   @PutMapping("/{id}")
   Response update(@PathVariable Long id, @Valid @RequestBody Request r) {
     var e = find(id);
+    referenceValidator.validate(r.countryCode(), r.departmentId(), r.jobLevelId());
     e.update(r.firstName(), r.lastName(), r.email(), r.gender(), r.countryCode(), r.departmentId(), r.jobLevelId(),
         r.hiredOn());
     return Response.from(repository.save(e));

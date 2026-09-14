@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.UUID;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -24,9 +25,12 @@ public class ApiErrorHandler {
     ResponseEntity<ErrorBody> badRequest(Exception ex, HttpServletRequest request) { return error(HttpStatus.BAD_REQUEST,"INVALID_REQUEST",ex.getMessage(),Map.of(),request); }
     @ExceptionHandler(java.util.NoSuchElementException.class)
     ResponseEntity<ErrorBody> notFound(Exception ex, HttpServletRequest request) { return error(HttpStatus.NOT_FOUND,"NOT_FOUND",ex.getMessage(),Map.of(),request); }
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    ResponseEntity<ErrorBody> conflict(DataIntegrityViolationException ex, HttpServletRequest request) {
+        return error(HttpStatus.CONFLICT, "DATA_CONFLICT", "The change conflicts with existing or referenced data.", Map.of(), request);
+    }
     private ResponseEntity<ErrorBody> error(HttpStatus status, String code, String message, Map<String,String> fields, HttpServletRequest request) {
         var id = request.getHeader("X-Correlation-Id"); if (id == null || id.isBlank()) id = UUID.randomUUID().toString();
         return ResponseEntity.status(status).header("X-Correlation-Id", id).body(new ErrorBody(code,message,fields,id,Instant.now()));
     }
 }
-
