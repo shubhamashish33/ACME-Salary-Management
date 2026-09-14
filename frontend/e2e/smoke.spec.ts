@@ -18,7 +18,7 @@ async function mockApi(page: Page, employeeActive = true): Promise<void> {
   await page.route('**/api/v1/reference/countries', (route) => route.fulfill({ json: [{ value: 'US', label: 'United States' }] }));
   await page.route('**/api/v1/reference/departments', (route) => route.fulfill({ json: [{ value: '2', label: 'Engineering' }] }));
   await page.route('**/api/v1/reference/levels', (route) => route.fulfill({ json: [{ value: '3', label: 'Senior' }] }));
-  await page.route('**/api/v1/employees/1/salaries', (route) => route.fulfill({ json: [] }));
+  await page.route('**/api/v1/employees/1/salaries', (route) => route.fulfill({ json: [{ id: 1, amount: 100000, currencyCode: 'USD', effectiveFrom: '2026-09-14', effectiveTo: null }] }));
   await page.route('**/api/v1/employees?**', (route) => route.fulfill({ json: {
     content: [{ id: 1, employeeNumber: 'ACME-00001', firstName: 'Avery', lastName: 'Patel', email: 'avery@acme.test', gender: 'Prefer not to say', countryCode: 'US', departmentId: 2, jobLevelId: 3, hiredOn: '2025-01-01', active: employeeActive, version: 0 }],
     totalElements: 1, totalPages: 1, number: 0,
@@ -91,4 +91,17 @@ test('profile and create form open as overlay cards on a phone', async ({ page }
   await expect(page.getByRole('heading', { name: 'Create profile' })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Close form overlay' })).toBeVisible();
   expect(await page.locator('.detail').evaluate((element) => getComputedStyle(element).position)).toBe('fixed');
+});
+
+test('employee details open as an overlay on a compact desktop', async ({ page }) => {
+  await page.setViewportSize({ width: 1024, height: 768 });
+  await mockApi(page);
+  await signIn(page);
+  await page.getByRole('button', { name: 'Employees' }).click();
+  await page.getByText('Avery Patel').click();
+
+  const detailCard = page.locator('.detail');
+  await expect(detailCard).toBeVisible();
+  expect(await detailCard.evaluate((element) => getComputedStyle(element).position)).toBe('fixed');
+  await expect(page.getByText('Effective Sep 14, 2026 — Current')).toBeVisible();
 });

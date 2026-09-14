@@ -52,7 +52,7 @@
         <p class="eyebrow">EMPLOYEE PROFILE</p><h2>{{ employee.firstName }} {{ employee.lastName }}</h2>
         <p class="profile-meta">{{ employee.email }}<br>{{ employee.employeeNumber }} · {{ optionLabel(countries(), employee.countryCode) }}<br>{{ optionLabel(departments(), employee.departmentId) }} · {{ optionLabel(levels(), employee.jobLevelId) }}</p>
         <button (click)="editEmployee(employee)"><app-icon name="edit" />Edit profile</button><hr><h3>Salary history</h3>
-        @for (salary of salaries(); track salary.id) { <div class="salary"><strong>{{ formatMoney(salary.amount, salary.currencyCode) }}</strong><span>{{ salary.effectiveFrom | date }} — {{ salary.effectiveTo ? (salary.effectiveTo | date) : 'Current' }}</span></div> }
+        @for (salary of salaries(); track salary.id) { <div class="salary"><strong>{{ formatMoney(salary.amount, salary.currencyCode) }}</strong><span>Effective {{ salary.effectiveFrom | date }} — {{ salary.effectiveTo ? (salary.effectiveTo | date) : 'Current' }}</span></div> }
         <form (ngSubmit)="addSalary()"><h3>Record salary change</h3><div class="inline"><label>Annual amount<input name="amount" type="number" min="1" [(ngModel)]="amount" required /></label><label>Currency<select name="currency" [(ngModel)]="currency"><option>USD</option><option>INR</option><option>GBP</option><option>EUR</option><option>CAD</option><option>SGD</option></select></label></div><label>Effective date<input name="date" type="date" [(ngModel)]="effectiveFrom" required /></label><button class="primary">Save salary</button></form>
         @if (employee.active) {
           <button class="danger" (click)="deactivate(employee)">Deactivate employee</button>
