@@ -4,11 +4,11 @@ A web application for maintaining and understanding base salary data for 10,000 
 
 ## Product tour
 
-- **Live application:** add the Render static-site URL after deployment
+- **Live application:** https://salary-management-web.onrender.com
 - **Video walkthrough:** add the unlisted video URL before submission
 - **Demo user:** `hr@acme.test`; obtain the generated password from the Render API environment
-- **API documentation:** `/swagger-ui/index.html` on the API service
-- **Health:** `/actuator/health`
+- **API documentation:** https://salary-management-api-09al.onrender.com/swagger-ui/index.html
+- **Health:** https://salary-management-api-09al.onrender.com/actuator/health
 
 The hosted service uses synthetic data and fixed FX rates dated 2026-01-01. It does not contain current exchange rates or compensation recommendations.
 
@@ -47,7 +47,7 @@ Dates use ISO `YYYY-MM-DD`; country and currency values use ISO codes; departmen
 
 1. Push this repository to GitHub.
 2. In Render, create a Blueprint from `render.yaml`.
-3. After resource creation, confirm the actual API and static-site hostnames. Update `API_URL` on the static site and `ALLOWED_ORIGINS` on the API if Render added a suffix, then redeploy both.
+3. Confirm the deployed hostnames still match the committed `API_URL` and `ALLOWED_ORIGINS`; update and redeploy if Render changes either hostname during recovery.
 4. Copy the generated `DEMO_PASSWORD` into the submission instructions without committing it.
 5. Check the health endpoint, wake the API, and complete the acceptance walkthrough before sharing the URL.
 
@@ -56,4 +56,3 @@ Free-tier limitations are material: the API sleeps after inactivity and can take
 ## Architecture and decisions
 
 The [product requirements](docs/requirements.md) were committed before application code. The [architecture note](docs/architecture.md) explains the modular monolith and data flow; [trade-offs](docs/trade-offs.md) records scope, security, performance, and free-hosting decisions; [AI workflow](docs/ai-workflow.md) records how assistance was used and verified.
-
