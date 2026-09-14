@@ -46,15 +46,6 @@ employeeNumber,firstName,lastName,email,gender,countryCode,department,jobLevel,h
 
 Dates use ISO `YYYY-MM-DD`; country and currency values use ISO codes; department names and job-level codes must match reference data. Validation runs before import. An invalid file persists no employee rows, and duplicate employee numbers or emails are rejected.
 
-## Deployment on Render
-
-1. Push this repository to GitHub.
-2. In Render, create a Blueprint from `render.yaml`.
-3. Confirm the deployed hostnames still match the committed `API_URL` and `ALLOWED_ORIGINS`; update and redeploy if Render changes either hostname during recovery.
-4. Copy the generated `DEMO_PASSWORD` into the private submission instructions without committing it.
-5. Check the health endpoint, wake the API, and complete the acceptance walkthrough before sharing the URL.
-
-Free-tier limitations are material: the API sleeps after inactivity and can take about a minute to wake; the free PostgreSQL database expires 30 days after creation and has no backups. Record the database expiry date, deploy close to submission, and retain the deterministic seed/recovery path. Docker Compose remains the durable evaluator fallback.
 
 ## Architecture and decisions
 
