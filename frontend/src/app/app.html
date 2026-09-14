@@ -1,0 +1,325 @@
+@if (!loggedIn()) {
+  <main class="login-shell">
+    <section class="login-card">
+      <div class="mark">AC</div>
+      <p class="eyebrow">ACME PEOPLE OPERATIONS</p>
+      <h1>Salary intelligence,<br /><em>made understandable.</em></h1>
+      <p class="muted">
+        A secure workspace for maintaining employee salaries and understanding how the organization
+        pays people.
+      </p>
+      <form (ngSubmit)="login()">
+        <label>Email<input name="username" type="email" [(ngModel)]="username" required /></label
+        ><label
+          >Password<input name="password" type="password" [(ngModel)]="password" required /></label
+        ><button class="primary" [disabled]="loading()">
+          {{ loading() ? 'Waking secure workspace…' : 'Sign in' }}
+        </button>
+      </form>
+      @if (error()) {
+        <p class="error">{{ error() }}</p>
+      }
+      <p class="demo">Demo: hr&#64;acme.test / ChangeMe123!</p>
+    </section>
+    <aside>
+      <div class="orb"></div>
+      <blockquote>
+        “Compensation decisions deserve data that is clear, contextual, and trusted.”
+      </blockquote>
+      <p>10,000 synthetic employee profiles · FX as of 01 Jan 2026</p>
+    </aside>
+  </main>
+} @else {
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div>
+        <div class="brand">
+          <span>AC</span><strong>ACME<br /><small>Compensation</small></strong>
+        </div>
+        <nav>
+          <button [class.active]="view() === 'dashboard'" (click)="navigate('dashboard')">
+            ⌁ <span>Overview</span></button
+          ><button [class.active]="view() === 'employees'" (click)="navigate('employees')">
+            ♙ <span>Employees</span></button
+          ><button [class.active]="view() === 'import'" (click)="navigate('import')">
+            ⇧ <span>Import data</span>
+          </button>
+        </nav>
+      </div>
+      <button class="logout" (click)="logout()">Sign out</button>
+    </aside>
+    <main class="content">
+      <header>
+        <div>
+          <p class="eyebrow">PEOPLE OPERATIONS</p>
+          <h1>
+            {{
+              view() === 'dashboard'
+                ? 'Compensation overview'
+                : view() === 'employees'
+                  ? 'Employee directory'
+                  : 'Import salary data'
+            }}
+          </h1>
+        </div>
+        <div class="user">
+          <span>HR</span>
+          <div><strong>HR Manager</strong><small>Authorized access</small></div>
+        </div>
+      </header>
+      <div class="notice">
+        <b>Synthetic demonstration data</b
+        ><span
+          >Salary conversions use fixed rates dated 01 Jan 2026 and are not current market
+          quotations.</span
+        >
+      </div>
+      @if (error()) {
+        <div class="error banner">{{ error() }} <button (click)="error.set('')">×</button></div>
+      }
+      @if (loading()) {
+        <div class="loading">
+          <i></i>
+          <p>Loading data… Free services may take up to a minute to wake.</p>
+        </div>
+      }
+      @if (view() === 'dashboard' && summary(); as s) {
+        <section class="metrics">
+          <article>
+            <p>ACTIVE EMPLOYEES</p>
+            <strong>{{ s.headcount | number }}</strong
+            ><small>Across 6 countries</small>
+          </article>
+          <article>
+            <p>ANNUAL BASE PAYROLL</p>
+            <strong>{{ formatMoney(s.annualPayroll) }}</strong
+            ><small>Normalized to {{ s.reportingCurrency }}</small>
+          </article>
+          <article>
+            <p>AVERAGE SALARY</p>
+            <strong>{{ formatMoney(s.averageSalary) }}</strong
+            ><small>Mean annual base pay</small>
+          </article>
+          <article>
+            <p>MEDIAN SALARY</p>
+            <strong>{{ formatMoney(s.medianSalary) }}</strong
+            ><small>50th percentile</small>
+          </article>
+        </section>
+        <section class="grid">
+          <article class="panel wide">
+            <div class="panel-title">
+              <div>
+                <p class="eyebrow">PAY DISTRIBUTION</p>
+                <h2>Average salary by country</h2>
+              </div>
+              <span>Reporting currency: USD</span>
+            </div>
+            <div class="bars">
+              @for (row of s.byCountry; track row.label) {
+                <div>
+                  <label
+                    ><span>{{ row.label }}</span
+                    ><b>{{ formatMoney(row.averageSalary) }}</b></label
+                  ><i><span [style.width.%]="row.averageSalary / 1500"></span></i>
+                </div>
+              }
+            </div>
+          </article>
+          <article class="panel">
+            <div class="panel-title">
+              <div>
+                <p class="eyebrow">ORGANIZATION</p>
+                <h2>By department</h2>
+              </div>
+            </div>
+            <div class="ranking">
+              @for (row of s.byDepartment; track row.label) {
+                <div>
+                  <span
+                    >{{ row.label }}<small>{{ row.headcount | number }} people</small></span
+                  ><b>{{ formatMoney(row.averageSalary) }}</b>
+                </div>
+              }
+            </div>
+          </article>
+        </section>
+      }
+      @if (view() === 'employees') {
+        <section class="toolbar">
+          <input
+            placeholder="Search name, email or employee ID"
+            [(ngModel)]="query"
+            (keyup.enter)="loadEmployees(0)"
+          /><select [(ngModel)]="active" (change)="loadEmployees(0)">
+            <option value="true">Active employees</option>
+            <option value="false">Inactive employees</option></select
+          ><button class="primary" (click)="loadEmployees(0)">Search</button
+          ><button (click)="exportCsv()">Export CSV</button
+          ><button class="primary" (click)="openCreate()">New employee</button>
+        </section>
+        @if (employees(); as p) {
+          <section class="employee-layout">
+            <article class="panel table-panel">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Employee</th>
+                    <th>Country</th>
+                    <th>Status</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (e of p.content; track e.id) {
+                    <tr (click)="selectEmployee(e)" [class.selected]="selected()?.id === e.id">
+                      <td>
+                        <strong>{{ e.firstName }} {{ e.lastName }}</strong
+                        ><small>{{ e.employeeNumber }} · {{ e.email }}</small>
+                      </td>
+                      <td>{{ e.countryCode }}</td>
+                      <td>
+                        <span class="pill">{{ e.active ? 'Active' : 'Inactive' }}</span>
+                      </td>
+                      <td>›</td>
+                    </tr>
+                  } @empty {
+                    <tr>
+                      <td colspan="4" class="empty">No employees match these filters.</td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+              <footer>
+                <span>{{ p.totalElements | number }} employees</span>
+                <div>
+                  <button [disabled]="p.number === 0" (click)="loadEmployees(p.number - 1)">
+                    Previous</button
+                  ><span>Page {{ p.number + 1 }} / {{ p.totalPages }}</span
+                  ><button
+                    [disabled]="p.number + 1 >= p.totalPages"
+                    (click)="loadEmployees(p.number + 1)"
+                  >
+                    Next
+                  </button>
+                </div>
+              </footer>
+            </article>
+            @if (editing()) {
+              <aside class="panel detail">
+                <button class="close" (click)="editing.set(false)">×</button>
+                <p class="eyebrow">{{ selected() ? 'EDIT EMPLOYEE' : 'NEW EMPLOYEE' }}</p>
+                <h2>{{ selected() ? 'Update profile' : 'Create profile' }}</h2>
+                <form (ngSubmit)="saveEmployee()">
+                  <input name="number" placeholder="Employee number" [(ngModel)]="employeeDraft.employeeNumber" required />
+                  <div class="inline"><input name="first" placeholder="First name" [(ngModel)]="employeeDraft.firstName" required /><input name="last" placeholder="Last name" [(ngModel)]="employeeDraft.lastName" required /></div>
+                  <input name="email" type="email" placeholder="Email" [(ngModel)]="employeeDraft.email" required />
+                  <div class="inline"><select name="gender" [(ngModel)]="employeeDraft.gender"><option>Female</option><option>Male</option><option>Non-binary</option><option>Prefer not to say</option></select><select name="country" [(ngModel)]="employeeDraft.countryCode"><option>US</option><option>IN</option><option>GB</option><option>DE</option><option>CA</option><option>SG</option></select></div>
+                  <div class="inline"><input name="department" type="number" min="1" max="8" placeholder="Department ID" [(ngModel)]="employeeDraft.departmentId" required /><input name="level" type="number" min="1" max="5" placeholder="Level ID" [(ngModel)]="employeeDraft.jobLevelId" required /></div>
+                  <input name="hired" type="date" [(ngModel)]="employeeDraft.hiredOn" required />
+                  <button class="primary">Save employee</button>
+                </form>
+              </aside>
+            } @else if (selected(); as e) {
+              <aside class="panel detail">
+                <button class="close" (click)="selected.set(null)">×</button>
+                <p class="eyebrow">EMPLOYEE PROFILE</p>
+                <h2>{{ e.firstName }} {{ e.lastName }}</h2>
+                <p>{{ e.email }}<br />{{ e.employeeNumber }} · {{ e.countryCode }}</p>
+                <button (click)="editing.set(true)">Edit profile</button>
+                <hr />
+                <h3>Salary history</h3>
+                @for (s of salaries(); track s.id) {
+                  <div class="salary">
+                    <strong>{{ formatMoney(s.amount, s.currencyCode) }}</strong
+                    ><span
+                      >{{ s.effectiveFrom | date }} —
+                      {{ s.effectiveTo ? (s.effectiveTo | date) : 'Current' }}</span
+                    >
+                  </div>
+                }
+                <form (ngSubmit)="addSalary()">
+                  <h3>Record salary change</h3>
+                  <div class="inline">
+                    <input
+                      name="amount"
+                      type="number"
+                      placeholder="Amount"
+                      [(ngModel)]="amount"
+                      required
+                    /><select name="currency" [(ngModel)]="currency">
+                      <option>USD</option>
+                      <option>INR</option>
+                      <option>GBP</option>
+                      <option>EUR</option>
+                      <option>CAD</option>
+                      <option>SGD</option>
+                    </select>
+                  </div>
+                  <input name="date" type="date" [(ngModel)]="effectiveFrom" required /><button
+                    class="primary"
+                  >
+                    Save salary
+                  </button>
+                </form>
+                <button class="danger" (click)="deactivate(e)">Deactivate employee</button>
+              </aside>
+            }
+          </section>
+        }
+      }
+      @if (view() === 'import') {
+        <section class="import-grid">
+          <article class="panel upload">
+            <p class="eyebrow">BULK ONBOARDING</p>
+            <h2>Validate before anything changes</h2>
+            <p class="muted">
+              Imports are atomic: invalid files save no employee records. Start with the documented
+              template.
+            </p>
+            <a [href]="api + '/api/v1/imports/template'" target="_blank">Download CSV template</a
+            ><label class="drop"
+              ><input type="file" accept=".csv,text/csv" (change)="chooseFile($event)" /><b>{{
+                file?.name || 'Choose a CSV file'
+              }}</b
+              ><span>Maximum 5 MB · UTF-8 CSV</span></label
+            ><button class="primary" [disabled]="!file" (click)="validateFile()">
+              Validate file
+            </button>
+          </article>
+          @if (preview(); as p) {
+            <article class="panel results">
+              <p class="eyebrow">VALIDATION RESULT</p>
+              <h2>{{ p.invalidRows === 0 ? 'Ready to import' : 'Corrections required' }}</h2>
+              <div class="result-counts">
+                <span
+                  ><b>{{ p.totalRows }}</b
+                  >Total</span
+                ><span class="ok"
+                  ><b>{{ p.validRows }}</b
+                  >Valid</span
+                ><span class="bad"
+                  ><b>{{ p.invalidRows }}</b
+                  >Invalid</span
+                >
+              </div>
+              @if (p.errors.length) {
+                <div class="errors">
+                  @for (e of p.errors; track $index) {
+                    <p>
+                      Row {{ e.row }} · <b>{{ e.field }}</b> — {{ e.message }}
+                    </p>
+                  }
+                </div>
+              } @else {
+                <button class="primary" [disabled]="importing()" (click)="importFile()">
+                  {{ importing() ? 'Importing…' : 'Import validated rows' }}
+                </button>
+              }
+            </article>
+          }
+        </section>
+      }
+    </main>
+  </div>
+}
