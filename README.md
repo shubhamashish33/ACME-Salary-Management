@@ -7,8 +7,8 @@ The overview answers common organizational-pay questions with current active hea
 ## Product tour
 
 - **Live application:** https://salary-management-web.onrender.com
-- **Video walkthrough:** add the unlisted video URL before submission
-- **Demo user:** `hr@acme.test`; supply the generated Render password privately with the submission
+- **Video walkthrough:** 
+- **Demo user:** `hr@acme.test`; 
 - **API documentation:** https://salary-management-api-09al.onrender.com/swagger-ui/index.html
 - **Health:** https://salary-management-api-09al.onrender.com/actuator/health
 
