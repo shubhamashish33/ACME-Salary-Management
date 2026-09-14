@@ -31,6 +31,7 @@
     </article>
 
     @if (editing()) {
+      <button class="detail-backdrop" aria-label="Close form overlay" (click)="editing.set(false)"></button>
       <aside class="panel detail">
         <button class="icon-button close" aria-label="Close form" (click)="editing.set(false)"><app-icon name="close" /></button>
         <p class="eyebrow">{{ selected() ? 'EDIT EMPLOYEE' : 'NEW EMPLOYEE' }}</p><h2>{{ selected() ? 'Update profile' : 'Create profile' }}</h2>
@@ -45,6 +46,7 @@
         </form>
       </aside>
     } @else if (selected(); as employee) {
+      <button class="detail-backdrop" aria-label="Close profile overlay" (click)="selected.set(null)"></button>
       <aside class="panel detail">
         <button class="icon-button close" aria-label="Close profile" (click)="selected.set(null)"><app-icon name="close" /></button>
         <p class="eyebrow">EMPLOYEE PROFILE</p><h2>{{ employee.firstName }} {{ employee.lastName }}</h2>

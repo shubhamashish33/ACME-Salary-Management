@@ -18,6 +18,7 @@ async function mockApi(page: Page, employeeActive = true): Promise<void> {
   await page.route('**/api/v1/reference/countries', (route) => route.fulfill({ json: [{ value: 'US', label: 'United States' }] }));
   await page.route('**/api/v1/reference/departments', (route) => route.fulfill({ json: [{ value: '2', label: 'Engineering' }] }));
   await page.route('**/api/v1/reference/levels', (route) => route.fulfill({ json: [{ value: '3', label: 'Senior' }] }));
+  await page.route('**/api/v1/employees/1/salaries', (route) => route.fulfill({ json: [] }));
   await page.route('**/api/v1/employees?**', (route) => route.fulfill({ json: {
     content: [{ id: 1, employeeNumber: 'ACME-00001', firstName: 'Avery', lastName: 'Patel', email: 'avery@acme.test', gender: 'Prefer not to say', countryCode: 'US', departmentId: 2, jobLevelId: 3, hiredOn: '2025-01-01', active: employeeActive, version: 0 }],
     totalElements: 1, totalPages: 1, number: 0,
@@ -71,4 +72,23 @@ test('inactive employee profile does not offer deactivation again', async ({ pag
   await page.getByText('Avery Patel').click();
   await expect(page.getByText('Employee is inactive')).toBeVisible();
   await expect(page.getByRole('button', { name: 'Deactivate employee' })).toHaveCount(0);
+});
+
+test('profile and create form open as overlay cards on a phone', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await mockApi(page);
+  await signIn(page);
+  await page.getByRole('button', { name: 'Employees' }).click();
+
+  await page.getByText('Avery Patel').click();
+  const profileCard = page.locator('.detail');
+  await expect(profileCard).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Close profile overlay' })).toBeVisible();
+  expect(await profileCard.evaluate((element) => getComputedStyle(element).position)).toBe('fixed');
+
+  await page.getByRole('button', { name: 'Close profile', exact: true }).click();
+  await page.getByRole('button', { name: 'New employee' }).click();
+  await expect(page.getByRole('heading', { name: 'Create profile' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Close form overlay' })).toBeVisible();
+  expect(await page.locator('.detail').evaluate((element) => getComputedStyle(element).position)).toBe('fixed');
 });
