@@ -12,7 +12,7 @@ public class Employee {
     @Column(name="last_name", nullable=false) String lastName;
     @Column(nullable=false, unique=true) String email;
     @Column(nullable=false) String gender;
-    @Column(name="country_code", nullable=false) String countryCode;
+    @Column(name="country_code", nullable=false, columnDefinition="char(2)") String countryCode;
     @Column(name="department_id", nullable=false) Long departmentId;
     @Column(name="job_level_id", nullable=false) Long jobLevelId;
     @Column(name="hired_on", nullable=false) LocalDate hiredOn;
@@ -27,4 +27,3 @@ public class Employee {
     void update(String firstName,String lastName,String email,String gender,String countryCode,Long departmentId,Long jobLevelId,LocalDate hiredOn) { this.firstName=firstName;this.lastName=lastName;this.email=email;this.gender=gender;this.countryCode=countryCode;this.departmentId=departmentId;this.jobLevelId=jobLevelId;this.hiredOn=hiredOn; }
     void deactivate(){ active=false; }
 }
-
