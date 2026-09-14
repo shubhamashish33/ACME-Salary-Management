@@ -9,7 +9,7 @@ ACME currently manages salary information for 10,000 employees across multiple c
 - HR can quickly find, filter, create, update, and deactivate employees without navigating spreadsheets.
 - HR can validate and import a documented CSV format with actionable row-level feedback.
 - Salary changes preserve previous values and effective dates rather than overwriting history.
-- HR can compare headcount, payroll, average, median, and salary distributions across country, department, level, and gender.
+- HR can inspect the current salary distribution and compare headcount and pay across country, department, level, and gender.
 - Cross-country figures show both local salary and a clearly labelled normalized reporting value using documented, deterministic exchange rates.
 - The deployed application remains usable with 10,000 seeded employees and can be evaluated from its repository, public URL, local setup, tests, and video.
 
