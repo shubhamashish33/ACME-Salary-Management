@@ -1,0 +1,42 @@
+databases:
+  - name: salary-management-db
+    plan: free
+    databaseName: salary_management
+    user: salary
+services:
+  - type: web
+    name: salary-management-api
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /actuator/health
+    envVars:
+      - key: DB_HOST
+        fromDatabase: {name: salary-management-db, property: host}
+      - key: DB_NAME
+        fromDatabase: {name: salary-management-db, property: database}
+      - key: DB_USER
+        fromDatabase: {name: salary-management-db, property: user}
+      - key: DB_PASSWORD
+        fromDatabase: {name: salary-management-db, property: password}
+      - key: DB_PORT
+        fromDatabase: {name: salary-management-db, property: port}
+      - key: DEMO_USERNAME
+        value: hr@acme.test
+      - key: DEMO_PASSWORD
+        generateValue: true
+      - key: ALLOWED_ORIGINS
+        value: https://salary-management-web.onrender.com
+  - type: web
+    name: salary-management-web
+    runtime: static
+    buildCommand: cd frontend && npm ci && npm run render-build
+    staticPublishPath: ./frontend/dist/frontend/browser
+    envVars:
+      - key: API_URL
+        value: https://salary-management-api.onrender.com
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+
