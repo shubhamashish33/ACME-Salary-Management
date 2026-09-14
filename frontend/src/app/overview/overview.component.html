@@ -1,0 +1,28 @@
+<section class="metrics" aria-label="Compensation summary">
+  <article><p>ACTIVE EMPLOYEES</p><strong>{{ summary.headcount | number }}</strong><small>Current workforce</small></article>
+  <article><p>ANNUAL BASE PAYROLL</p><strong>{{ formatMoney(summary.annualPayroll) }}</strong><small>Normalized to {{ summary.reportingCurrency }}</small></article>
+  <article><p>AVERAGE SALARY</p><strong>{{ formatMoney(summary.averageSalary) }}</strong><small>Mean annual base pay</small></article>
+  <article><p>MEDIAN SALARY</p><strong>{{ formatMoney(summary.medianSalary) }}</strong><small>50th percentile</small></article>
+</section>
+
+<section class="overview-grid">
+  <article class="panel">
+    <div class="panel-title">
+      <div><p class="eyebrow">PAY DISTRIBUTION</p><h2>Average salary by country</h2></div>
+      <span>{{ summary.reportingCurrency }} · FX {{ summary.fxAsOf }}</span>
+    </div>
+    <div class="bars">
+      @for (row of summary.byCountry; track row.label) {
+        <div><label><span>{{ row.label }}</span><b>{{ formatMoney(row.averageSalary) }}</b></label><i><span [style.width.%]="barWidth(row.averageSalary)"></span></i></div>
+      }
+    </div>
+  </article>
+  <article class="panel">
+    <div class="panel-title"><div><p class="eyebrow">ORGANIZATION</p><h2>By department</h2></div></div>
+    <div class="ranking">
+      @for (row of summary.byDepartment; track row.label) {
+        <div><span>{{ row.label }}<small>{{ row.headcount | number }} people</small></span><b>{{ formatMoney(row.averageSalary) }}</b></div>
+      }
+    </div>
+  </article>
+</section>

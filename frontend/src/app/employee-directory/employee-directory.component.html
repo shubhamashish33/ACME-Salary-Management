@@ -1,0 +1,59 @@
+<section class="directory-actions" aria-label="Employee filters">
+  <label class="search"><app-icon name="search" /><input aria-label="Search employees" placeholder="Search name, email or employee ID" [(ngModel)]="query" (keyup.enter)="loadEmployees(0)" /></label>
+  <select aria-label="Employee status" [(ngModel)]="active" (change)="loadEmployees(0)"><option value="true">Active employees</option><option value="false">Inactive employees</option></select>
+  <button class="primary" (click)="loadEmployees(0)"><app-icon name="search" />Search</button>
+  <button (click)="exportCsv()"><app-icon name="download" />Export</button>
+  <button class="primary" [disabled]="!departments().length || !levels().length" (click)="openCreate()"><app-icon name="plus" />New employee</button>
+</section>
+
+@if (error()) { <div class="error-banner" role="alert"><span>{{ error() }}</span><button aria-label="Dismiss error" (click)="error.set('')"><app-icon name="close" /></button></div> }
+@if (loading()) { <div class="loading"><i></i><p>Loading employee data…</p></div> }
+
+@if (employees(); as result) {
+  <section class="employee-layout">
+    <article class="panel table-panel">
+      <table>
+        <thead><tr><th>Employee</th><th>Department</th><th>Level</th><th>Country</th><th>Status</th><th><span class="sr-only">Open</span></th></tr></thead>
+        <tbody>
+          @for (employee of result.content; track employee.id) {
+            <tr tabindex="0" (click)="selectEmployee(employee)" (keyup.enter)="selectEmployee(employee)" [class.selected]="selected()?.id === employee.id">
+              <td data-label="Employee"><strong>{{ employee.firstName }} {{ employee.lastName }}</strong><small>{{ employee.employeeNumber }} · {{ employee.email }}</small></td>
+              <td data-label="Department">{{ optionLabel(departments(), employee.departmentId) }}</td>
+              <td data-label="Level">{{ optionLabel(levels(), employee.jobLevelId) }}</td>
+              <td data-label="Country">{{ optionLabel(countries(), employee.countryCode) }}</td>
+              <td data-label="Status"><span class="pill">{{ employee.active ? 'Active' : 'Inactive' }}</span></td>
+              <td class="row-action"><app-icon name="chevron" /></td>
+            </tr>
+          } @empty { <tr><td colspan="6" class="empty">No employees match these filters.</td></tr> }
+        </tbody>
+      </table>
+      <footer><span>{{ result.totalElements | number }} employees</span><div><button [disabled]="result.number === 0" (click)="loadEmployees(result.number - 1)">Previous</button><span>Page {{ result.number + 1 }} / {{ result.totalPages || 1 }}</span><button [disabled]="result.number + 1 >= result.totalPages" (click)="loadEmployees(result.number + 1)">Next</button></div></footer>
+    </article>
+
+    @if (editing()) {
+      <aside class="panel detail">
+        <button class="icon-button close" aria-label="Close form" (click)="editing.set(false)"><app-icon name="close" /></button>
+        <p class="eyebrow">{{ selected() ? 'EDIT EMPLOYEE' : 'NEW EMPLOYEE' }}</p><h2>{{ selected() ? 'Update profile' : 'Create profile' }}</h2>
+        <form (ngSubmit)="saveEmployee()">
+          <label>Employee number<input name="number" [(ngModel)]="employeeDraft.employeeNumber" required /></label>
+          <div class="inline equal"><label>First name<input name="first" [(ngModel)]="employeeDraft.firstName" required /></label><label>Last name<input name="last" [(ngModel)]="employeeDraft.lastName" required /></label></div>
+          <label>Email<input name="email" type="email" [(ngModel)]="employeeDraft.email" required /></label>
+          <div class="inline equal"><label>Gender<select name="gender" [(ngModel)]="employeeDraft.gender"><option>Female</option><option>Male</option><option>Non-binary</option><option>Prefer not to say</option></select></label><label>Country<select name="country" [(ngModel)]="employeeDraft.countryCode" required>@for (option of countries(); track option.value) { <option [value]="option.value">{{ option.label }}</option> }</select></label></div>
+          <div class="inline equal"><label>Department<select name="department" [(ngModel)]="employeeDraft.departmentId" required>@for (option of departments(); track option.value) { <option [ngValue]="+option.value">{{ option.label }}</option> }</select></label><label>Job level<select name="level" [(ngModel)]="employeeDraft.jobLevelId" required>@for (option of levels(); track option.value) { <option [ngValue]="+option.value">{{ option.label }}</option> }</select></label></div>
+          <label>Hire date<input name="hired" type="date" [(ngModel)]="employeeDraft.hiredOn" required /></label>
+          <button class="primary"><app-icon name="edit" />Save employee</button>
+        </form>
+      </aside>
+    } @else if (selected(); as employee) {
+      <aside class="panel detail">
+        <button class="icon-button close" aria-label="Close profile" (click)="selected.set(null)"><app-icon name="close" /></button>
+        <p class="eyebrow">EMPLOYEE PROFILE</p><h2>{{ employee.firstName }} {{ employee.lastName }}</h2>
+        <p class="profile-meta">{{ employee.email }}<br>{{ employee.employeeNumber }} · {{ optionLabel(countries(), employee.countryCode) }}<br>{{ optionLabel(departments(), employee.departmentId) }} · {{ optionLabel(levels(), employee.jobLevelId) }}</p>
+        <button (click)="editEmployee(employee)"><app-icon name="edit" />Edit profile</button><hr><h3>Salary history</h3>
+        @for (salary of salaries(); track salary.id) { <div class="salary"><strong>{{ formatMoney(salary.amount, salary.currencyCode) }}</strong><span>{{ salary.effectiveFrom | date }} — {{ salary.effectiveTo ? (salary.effectiveTo | date) : 'Current' }}</span></div> }
+        <form (ngSubmit)="addSalary()"><h3>Record salary change</h3><div class="inline"><label>Annual amount<input name="amount" type="number" min="1" [(ngModel)]="amount" required /></label><label>Currency<select name="currency" [(ngModel)]="currency"><option>USD</option><option>INR</option><option>GBP</option><option>EUR</option><option>CAD</option><option>SGD</option></select></label></div><label>Effective date<input name="date" type="date" [(ngModel)]="effectiveFrom" required /></label><button class="primary">Save salary</button></form>
+        <button class="danger" (click)="deactivate(employee)">Deactivate employee</button>
+      </aside>
+    }
+  </section>
+}

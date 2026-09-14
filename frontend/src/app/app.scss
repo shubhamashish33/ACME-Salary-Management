@@ -30,6 +30,11 @@ button {
     color: var(--ink)
 }
 
+button app-icon {
+    vertical-align: middle;
+    margin-right: .35rem
+}
+
 button:disabled {
     opacity: .45;
     cursor: not-allowed
@@ -216,7 +221,8 @@ select:focus {
     color: #d6e5df;
     text-align: left;
     display: flex;
-    gap: .8rem
+    gap: .8rem;
+    align-items: center
 }
 
 .sidebar nav button.active {
@@ -637,5 +643,121 @@ tbody tr.selected {
 
     .notice {
         display: grid
+    }
+}
+
+@media(max-width:700px) {
+    .app-shell {
+        display: block;
+        padding-bottom: 74px
+    }
+
+    .sidebar {
+        position: fixed;
+        z-index: 20;
+        inset: auto 0 0 0;
+        height: 68px;
+        padding: .45rem .7rem;
+        display: grid;
+        grid-template-columns: 1fr auto;
+        align-items: center;
+        box-shadow: 0 -8px 28px #10291f24
+    }
+
+    .sidebar>div {
+        min-width: 0
+    }
+
+    .brand {
+        display: none
+    }
+
+    .sidebar nav {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: .25rem
+    }
+
+    .sidebar nav button,
+    .logout {
+        min-width: 0;
+        padding: .55rem .65rem;
+        justify-content: center;
+        border-radius: 8px
+    }
+
+    .sidebar nav span {
+        display: inline;
+        font-size: .68rem
+    }
+
+    .sidebar nav button {
+        display: grid;
+        justify-items: center;
+        gap: .2rem
+    }
+
+    .sidebar nav button app-icon,
+    .logout app-icon {
+        margin: 0
+    }
+
+    .logout span {
+        display: none
+    }
+
+    .content {
+        padding: 1rem
+    }
+
+    .content>header {
+        margin-bottom: 1rem
+    }
+
+    .content h1 {
+        font-size: 1.55rem
+    }
+
+    .notice {
+        gap: .35rem;
+        padding: .75rem .9rem
+    }
+
+    .import-grid {
+        grid-template-columns: 1fr
+    }
+
+    .panel {
+        padding: 1.1rem
+    }
+
+    .result-counts {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: .45rem
+    }
+
+    .result-counts span {
+        min-width: 0;
+        padding: .75rem
+    }
+}
+
+@media(max-width:390px) {
+    .sidebar nav span {
+        font-size: .61rem
+    }
+
+    .sidebar nav button,
+    .logout {
+        padding: .5rem .35rem
+    }
+
+    .login-card {
+        padding: 2rem 1.1rem
+    }
+
+    .login-card h1 {
+        font-size: 2.25rem
     }
 }
