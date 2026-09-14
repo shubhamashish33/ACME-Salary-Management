@@ -37,6 +37,7 @@ export class App {
   validateFile(){if(!this.file)return;const data=new FormData();data.append('file',this.file);this.loading.set(true);this.http.post<ImportPreview>(`${this.api}/api/v1/imports/validate`,data,this.options()).subscribe({next:v=>{this.preview.set(v);this.loading.set(false);},error:x=>this.fail(x,'CSV validation failed.')});}
   importFile(){if(!this.file||this.preview()?.invalidRows)return;const data=new FormData();data.append('file',this.file);this.importing.set(true);this.http.post<ImportPreview>(`${this.api}/api/v1/imports/employees`,data,this.options()).subscribe({next:v=>{this.preview.set(v);this.importing.set(false);},error:x=>{this.importing.set(false);this.fail(x,'CSV import failed. No rows were saved.');}});}
   exportCsv(){this.http.get(`${this.api}/api/v1/employees/export`,{...this.options(),responseType:'blob'}).subscribe(blob=>{const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='employees.csv';a.click();URL.revokeObjectURL(a.href);});}
+  downloadTemplate(){this.http.get(`${this.api}/api/v1/imports/template`,{...this.options(),responseType:'blob'}).subscribe(blob=>{const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='employees-template.csv';a.click();URL.revokeObjectURL(a.href);});}
   formatMoney(value:number,currency='USD'){return new Intl.NumberFormat('en-US',{style:'currency',currency,maximumFractionDigits:0}).format(value||0);}
   private fail(error:HttpErrorResponse,message:string){this.loading.set(false);this.error.set(error.error?.message||message);}
 }

@@ -277,7 +277,7 @@
               Imports are atomic: invalid files save no employee records. Start with the documented
               template.
             </p>
-            <a [href]="api + '/api/v1/imports/template'" target="_blank">Download CSV template</a
+            <button (click)="downloadTemplate()">Download CSV template</button
             ><label class="drop"
               ><input type="file" accept=".csv,text/csv" (change)="chooseFile($event)" /><b>{{
                 file?.name || 'Choose a CSV file'
