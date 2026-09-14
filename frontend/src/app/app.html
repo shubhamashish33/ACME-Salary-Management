@@ -36,7 +36,7 @@
       @if (error()) { <div class="error banner">{{ error() }} <button aria-label="Dismiss error" (click)="error.set('')">×</button></div> }
       @if (loading()) { <div class="loading"><i></i><p>Loading data… Free services may take up to a minute to wake.</p></div> }
       @switch (view()) {
-        @case ('dashboard') { @if (summary(); as data) { <app-overview [summary]="data" /> } }
+        @case ('dashboard') { @if (summary(); as data) { <app-overview [summary]="data" [api]="api" [auth]="auth()" [filters]="dashboardFilters" (filtersChange)="updateDashboard($event)" /> } }
         @case ('employees') { <app-employee-directory [api]="api" [auth]="auth()" /> }
         @case ('import') {
           <section class="import-grid">

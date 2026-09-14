@@ -1,28 +1,49 @@
+<section class="question-header">
+  <div><p class="eyebrow">COMPENSATION QUESTIONS</p><h2>How does ACME pay its people?</h2></div>
+  <p>Current base salaries for active employees, normalized to {{ summary.reportingCurrency }} using the fixed FX set dated {{ summary.fxAsOf }}.</p>
+</section>
+
+<form class="filters" (ngSubmit)="applyFilters()">
+  <label>Country<select name="countryFilter" [(ngModel)]="selectedCountry"><option value="">All countries</option>@for (option of countries(); track option.value) { <option [value]="option.value">{{ option.label }}</option> }</select></label>
+  <label>Department<select name="departmentFilter" [(ngModel)]="selectedDepartment"><option value="">All departments</option>@for (option of departments(); track option.value) { <option [value]="option.value">{{ option.label }}</option> }</select></label>
+  <label>Job level<select name="levelFilter" [(ngModel)]="selectedLevel"><option value="">All levels</option>@for (option of levels(); track option.value) { <option [value]="option.value">{{ option.label }}</option> }</select></label>
+  <label>Gender<select name="genderFilter" [(ngModel)]="selectedGender"><option value="">All genders</option><option>Female</option><option>Male</option><option>Non-binary</option><option>Prefer not to say</option></select></label>
+  <button class="primary" type="submit">Apply filters</button><button type="button" (click)="clearFilters()">Clear</button>
+</form>
+
 <section class="metrics" aria-label="Compensation summary">
-  <article><p>ACTIVE EMPLOYEES</p><strong>{{ summary.headcount | number }}</strong><small>Current workforce</small></article>
+  <article><p>ACTIVE EMPLOYEES</p><strong>{{ summary.headcount | number }}</strong><small>In the selected population</small></article>
   <article><p>ANNUAL BASE PAYROLL</p><strong>{{ formatMoney(summary.annualPayroll) }}</strong><small>Normalized to {{ summary.reportingCurrency }}</small></article>
   <article><p>AVERAGE SALARY</p><strong>{{ formatMoney(summary.averageSalary) }}</strong><small>Mean annual base pay</small></article>
   <article><p>MEDIAN SALARY</p><strong>{{ formatMoney(summary.medianSalary) }}</strong><small>50th percentile</small></article>
 </section>
 
+<article class="panel distribution">
+  <div class="panel-title"><div><p class="eyebrow">SALARY DISTRIBUTION</p><h2>What does the pay range look like?</h2></div><span>Current base salary · {{ summary.reportingCurrency }}</span></div>
+  <div class="percentiles">
+    <div><small>Minimum</small><strong>{{ formatMoney(summary.salaryDistribution.minimum) }}</strong></div>
+    <div><small>25th percentile</small><strong>{{ formatMoney(summary.salaryDistribution.percentile25) }}</strong></div>
+    <div class="median"><small>Median</small><strong>{{ formatMoney(summary.salaryDistribution.median) }}</strong></div>
+    <div><small>75th percentile</small><strong>{{ formatMoney(summary.salaryDistribution.percentile75) }}</strong></div>
+    <div><small>Maximum</small><strong>{{ formatMoney(summary.salaryDistribution.maximum) }}</strong></div>
+  </div>
+</article>
+
 <section class="overview-grid">
   <article class="panel">
-    <div class="panel-title">
-      <div><p class="eyebrow">PAY DISTRIBUTION</p><h2>Average salary by country</h2></div>
-      <span>{{ summary.reportingCurrency }} · FX {{ summary.fxAsOf }}</span>
-    </div>
-    <div class="bars">
-      @for (row of summary.byCountry; track row.label) {
-        <div><label><span>{{ row.label }}</span><b>{{ formatMoney(row.averageSalary) }}</b></label><i><span [style.width.%]="barWidth(row.averageSalary)"></span></i></div>
-      }
-    </div>
+    <div class="panel-title"><div><p class="eyebrow">GEOGRAPHY</p><h2>Average salary by country</h2></div></div>
+    <div class="bars">@for (row of summary.byCountry; track row.label) { <div><label><span>{{ row.label }}<small>{{ row.headcount | number }} people</small></span><b>{{ formatMoney(row.averageSalary) }}</b></label><i><span [style.width.%]="barWidth(row.averageSalary)"></span></i></div> } @empty { <p class="empty">No country data matches these filters.</p> }</div>
   </article>
   <article class="panel">
-    <div class="panel-title"><div><p class="eyebrow">ORGANIZATION</p><h2>By department</h2></div></div>
-    <div class="ranking">
-      @for (row of summary.byDepartment; track row.label) {
-        <div><span>{{ row.label }}<small>{{ row.headcount | number }} people</small></span><b>{{ formatMoney(row.averageSalary) }}</b></div>
-      }
-    </div>
+    <div class="panel-title"><div><p class="eyebrow">FUNCTION</p><h2>Pay by department</h2></div></div>
+    <div class="ranking">@for (row of summary.byDepartment; track row.label) { <div><span>{{ row.label }}<small>{{ row.headcount | number }} people · {{ formatMoney(row.payroll) }} payroll</small></span><b>{{ formatMoney(row.averageSalary) }}<small>average</small></b></div> } @empty { <p class="empty">No department data matches these filters.</p> }</div>
+  </article>
+  <article class="panel">
+    <div class="panel-title"><div><p class="eyebrow">CAREER PROGRESSION</p><h2>Pay by job level</h2></div></div>
+    <div class="ranking">@for (row of summary.byLevel; track row.label) { <div><span>{{ row.label }}<small>{{ row.headcount | number }} people</small></span><b>{{ formatMoney(row.averageSalary) }}<small>average</small></b></div> } @empty { <p class="empty">No job-level data matches these filters.</p> }</div>
+  </article>
+  <article class="panel">
+    <div class="panel-title"><div><p class="eyebrow">REPRESENTATION</p><h2>Pay by gender</h2></div><span>Descriptive, not adjusted pay-gap analysis</span></div>
+    <div class="ranking">@for (row of summary.byGender; track row.label) { <div><span>{{ row.label }}<small>{{ row.headcount | number }} people</small></span><b>{{ formatMoney(row.averageSalary) }}<small>average</small></b></div> } @empty { <p class="empty">No gender data matches these filters.</p> }</div>
   </article>
 </section>

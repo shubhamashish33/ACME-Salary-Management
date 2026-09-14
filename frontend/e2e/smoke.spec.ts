@@ -7,14 +7,16 @@ const summary = {
   medianSalary: 79000,
   reportingCurrency: 'USD',
   fxAsOf: '2026-01-01',
+  salaryDistribution: { minimum: 42000, percentile25: 65000, median: 79000, percentile75: 102000, maximum: 180000 },
   byCountry: [{ label: 'United States', headcount: 4000, averageSalary: 105000, payroll: 420000000 }],
   byDepartment: [{ label: 'Engineering', headcount: 2500, averageSalary: 99000, payroll: 247500000 }],
-  byLevel: [],
+  byLevel: [{ label: 'Senior', headcount: 2000, averageSalary: 97000, payroll: 194000000 }],
+  byGender: [{ label: 'Female', headcount: 3400, averageSalary: 83000, payroll: 282200000 }],
 };
 
 async function mockApi(page: Page, employeeActive = true): Promise<void> {
   await page.route('**/api/v1/auth/me', (route) => route.fulfill({ json: { username: 'hr@acme.test', role: 'HR_MANAGER' } }));
-  await page.route('**/api/v1/analytics/summary', (route) => route.fulfill({ json: summary }));
+  await page.route('**/api/v1/analytics/summary**', (route) => route.fulfill({ json: summary }));
   await page.route('**/api/v1/reference/countries', (route) => route.fulfill({ json: [{ value: 'US', label: 'United States' }] }));
   await page.route('**/api/v1/reference/departments', (route) => route.fulfill({ json: [{ value: '2', label: 'Engineering' }] }));
   await page.route('**/api/v1/reference/levels', (route) => route.fulfill({ json: [{ value: '3', label: 'Senior' }] }));
@@ -37,6 +39,19 @@ test('HR can sign in and reach the compensation overview', async ({ page }) => {
   await expect(page.getByRole('heading', { name: 'Compensation overview' })).toBeVisible();
   await expect(page.getByText('10,000').first()).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Average salary by country' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Pay by job level' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Pay by gender' })).toBeVisible();
+  await expect(page.getByText('25th percentile')).toBeVisible();
+});
+
+test('dashboard filters are applied and represented in the URL', async ({ page }) => {
+  await mockApi(page);
+  await signIn(page);
+  await page.getByLabel('Department').selectOption('2');
+  await page.getByLabel('Gender').selectOption('Female');
+  await page.getByRole('button', { name: 'Apply filters' }).click();
+  await expect(page).toHaveURL(/departmentId=2/);
+  await expect(page).toHaveURL(/gender=Female/);
 });
 
 test('employee form uses understandable reference options', async ({ page }) => {

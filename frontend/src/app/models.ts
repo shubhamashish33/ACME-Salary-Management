@@ -12,9 +12,26 @@ export interface Summary {
   medianSalary: number;
   reportingCurrency: string;
   fxAsOf: string;
+  salaryDistribution: SalaryDistribution;
   byCountry: GroupMetric[];
   byDepartment: GroupMetric[];
   byLevel: GroupMetric[];
+  byGender: GroupMetric[];
+}
+
+export interface SalaryDistribution {
+  minimum: number;
+  percentile25: number;
+  median: number;
+  percentile75: number;
+  maximum: number;
+}
+
+export interface DashboardFilters {
+  country?: string;
+  departmentId?: number;
+  jobLevelId?: number;
+  gender?: string;
 }
 
 export interface Employee {
